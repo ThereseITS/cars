@@ -19,28 +19,27 @@ namespace cars
         int _registrationNumber;
 
         protected double _kmDriven;
-        protected double _co2;
-public string Name {  get { return _name; } }
+        protected double _totalEmissions;
 
-public Car(string name, string brand, string colour)
+        public string Name {  get { return _name; } }
+
+        public Car(string name, string brand, string colour)
         {
             _name = name;
             _brand = brand;
             _colour = colour;
             _registrationNumber = carCounter++;
             _kmDriven = 0;
-            _co2 = 0;
+            _totalEmissions = 0;
         }
 
         public virtual double Drive(double km)
-        {
-            _kmDriven += km;
-            
-            return _kmDriven;
+        {           
+            return 0;
         }
         public override string ToString()
         {
-            return $"{_registrationNumber,-10}{_name,-10} {_brand} {_colour} {_kmDriven,-10:F2} {_co2,10:F2}";
+            return $"Reg: {_registrationNumber,-10}\nBrand: {_name,-10} {_brand}\nColour:{_colour}\nKm Driven:{_kmDriven,-10:F2}km\nCO2: {_totalEmissions,10:F2}g";
         }
     }
 
@@ -48,30 +47,38 @@ public Car(string name, string brand, string colour)
     {
         double _fuelTankCapacityL;
         double _kmPerLitre;
-        double _co2EmissionsPerKm;
-        double _fuelLevelL;
-       
+        double _co2EmissionsGPerKm;
+        double _fuelLevelL;    
         public double FuelTankCapacityL { get { return _fuelTankCapacityL; } }
 
-        public DieselCar(string name, string brand, string colour, double capacity, double kmPerL, double co2PerL):base(name,brand,colour)
+        public DieselCar(string name, string brand, string colour, double capacity, double kmPerL, double co2GPerKm):base(name,brand,colour)
         {
             _fuelTankCapacityL = capacity;
             _kmPerLitre = kmPerL;
-            _co2EmissionsPerKm = co2PerL;
+            _co2EmissionsGPerKm = co2GPerKm;
             _fuelLevelL = 0;
         }
-
+/// <summary>
+/// Calculates km that can be driven, based on the fuel level in the tank, 
+/// if enough fuel,adds km to kmDriven, Co2 is updated and km is returned
+/// If not,the km that can be driven are are added to km driven, CO2 is updated and km driven returned.
+/// </summary>
+/// <param name="km"></param>
+/// <returns>km actually driven </returns>
         public override double Drive(double km)
         {
             double weCanDrive = _kmPerLitre * _fuelLevelL;
+
             if(weCanDrive>=km)
             {
                 _kmDriven += km;
+                _totalEmissions += km * _co2EmissionsGPerKm;
                 return km;
             }
             else
             {
                 _kmDriven += weCanDrive;
+                _totalEmissions += weCanDrive * _co2EmissionsGPerKm;
                 return weCanDrive;
             }
 
@@ -101,7 +108,7 @@ public Car(string name, string brand, string colour)
 
         public override string ToString()
         {
-            return base.ToString() + $"{_fuelTankCapacityL}"; 
+            return base.ToString() + $"\nFuel Level: {_fuelLevelL}\nFuel Tank Capacity: {_fuelTankCapacityL}\nKm per litre: {_kmPerLitre}\n"; 
         }
     }
 

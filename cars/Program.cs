@@ -1,4 +1,7 @@
-﻿namespace cars
+﻿//
+//Car example from class illustrating inheritance.
+//
+namespace cars
 {
     internal class Program
     {
